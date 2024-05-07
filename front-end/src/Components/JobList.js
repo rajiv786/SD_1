@@ -1,6 +1,6 @@
 import React, { useEffect, useCallback, useState, useRef } from 'react';
 import JobCard from './JobCard';
-import { Grid } from '@mui/material';
+import { Grid, Typography } from '@mui/material';
 import Filters from './Filters';
 const JobList = () => {
     const [jobs, setJobs] = useState([]);
@@ -64,7 +64,7 @@ const JobList = () => {
 	const windowHeight = "innerHeight" in window ? window.innerHeight : document.documentElement.offsetHeight;
 	const body = document.body.offsetHeight;
 	const windowBottom = windowHeight + window.scrollY;
-	
+	//when we reach at end then it will recall it 
 	if (windowBottom >= body-10) {
 	
 	  fetchData();
@@ -78,10 +78,11 @@ const JobList = () => {
 
   return (
 	  <>
-		 <Grid item xs={12}>
+		  <Grid item xs={12}>
+			  <Typography style={{textAlign:'center',fontSize:'56px',lineHeight:'70px',marginTop:'25px',marginBottom:'25px'}}>WeekDay Project</Typography>
           <Filters onApplyFilters={setFilters} />
 		  </Grid>
-		  <Grid container spacing={2}>
+		  <Grid container spacing={2} sx={{marginTop:'20px'}}>
 		{jobs.map((job, index) => {
   if (jobs.length === index + 1) {
     // Don't do anything for the last item

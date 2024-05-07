@@ -6,14 +6,15 @@ import Filters from './Components/Filters';
 
 function App() {
   return (
-    <Container>
-      <Grid container spacing={3}>
-        
+    
+      <Grid container spacing={3} style={{background:'beige'}}>
+       <Container>
         <Grid item xs={12}>
           <JobList />
-        </Grid>
+			  </Grid>
+			  </Container>
       </Grid>
-    </Container>
+
   );
 }
 

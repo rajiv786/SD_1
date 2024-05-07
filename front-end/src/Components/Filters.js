@@ -22,7 +22,7 @@ const Filters = ({ onApplyFilters }) => {
   };
 
   return (
-    <Grid container spacing={2}>
+    <Grid container spacing={2} style={{justifyContent:'center'}}>
       <Grid item>
         <TextField
           label="Min Experience"
@@ -47,7 +47,7 @@ const Filters = ({ onApplyFilters }) => {
           onChange={handleChange}
         />
       </Grid>
-      <Grid item>
+      {/* <Grid item>
         <Select
           label="Remote/On-site"
           name="remoteOnSite"
@@ -58,7 +58,7 @@ const Filters = ({ onApplyFilters }) => {
           <MenuItem value="Remote">Remote</MenuItem>
           <MenuItem value="On-site">On-site</MenuItem>
         </Select>
-      </Grid>
+      </Grid> */}
       <Grid item>
         <TextField
           label="Tech Stack"
