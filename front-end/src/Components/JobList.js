@@ -1,26 +1,39 @@
 import React, { useEffect, useCallback, useState, useRef } from 'react';
 import JobCard from './JobCard';
 import { Grid } from '@mui/material';
-
+import Filters from './Filters';
 const JobList = () => {
-  const [jobs, setJobs] = useState([]);
+    const [jobs, setJobs] = useState([]);
+  const [offset, setOffset] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [offset, setOffset] = useState(0);
-  const [fetchingData, setFetchingData] = useState(false);
-  const observer = useRef();
+  const [filters, setFilters] = useState({
+	minExperience: '',
+	companyName: '',
+	location: '',
+	remoteOnSite: '',
+	techStack: '',
+	role: '',
+	minBasePay: ''
+  });
+  
+  useEffect(() => {
+    fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filters]);
 
-  const fetchJobs = useCallback(async () => {
-    if (fetchingData) return; // Prevent multiple fetches
-    setFetchingData(true);
-    setLoading(true);
+  const fetchData = async () => {
     try {
-      const myHeaders = new Headers();
+      setLoading(true);
+		const myHeaders = new Headers();
+		console.log(filters.companyName,filters.minExperience)
       myHeaders.append("Content-Type", "application/json");
 
       const body = JSON.stringify({
         "limit": 10,
-        "offset": offset
+		  "offset": offset,
+		  "minExperience": filters.minExperience,
+		  "companyName": filters.companyName
       });
 
       const requestOptions = {
@@ -36,7 +49,7 @@ const JobList = () => {
       }
 
       const result = await response.json();
-		
+		console.log(result,'sfs')
       setJobs((prevJobs) => [...prevJobs, ...result.jdList]);
       setOffset((prevOffset) => prevOffset + result.jdList.length);
       setError(null);
@@ -44,52 +57,59 @@ const JobList = () => {
       setError(error.message);
     } finally {
       setLoading(false);
-      setFetchingData(false);
     }
-  }, [offset, fetchingData]);
+  };
 
-  const lastJobElementRef = useCallback(
-    (node) => {
-      if (loading || !node || fetchingData) return;
-      if (observer.current) observer.current.disconnect();
-      observer.current = new IntersectionObserver((entries) => {
-        if (entries[0].isIntersecting) {
-          fetchJobs();
-        }
-      });
-      observer.current.observe(node);
-    },
-    [loading, fetchJobs, fetchingData]
-  );
+  const handleScroll = () => {
+	const windowHeight = "innerHeight" in window ? window.innerHeight : document.documentElement.offsetHeight;
+	const body = document.body.offsetHeight;
+	const windowBottom = windowHeight + window.scrollY;
+	
+	if (windowBottom >= body-10) {
+	
+	  fetchData();
+	}
+  };
 
   useEffect(() => {
-    fetchJobs(); // Fetch initial jobs when component mounts
-  }, [fetchJobs]);
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [handleScroll]);
 
   return (
-    <div>
-      {jobs.map((job, index) => {
-        if (jobs.length === index + 1) {
-			return (
-				<Grid container spacing={2} ref={lastJobElementRef} key={job.id}>
-            
-					<JobCard job={job} />
-					
-					
-					</Grid>
-          );
-        } else {
-          return <Grid container spacing={2}> {/* Add spacing between the items */}
-		  {jobs.map((job, index) => (
-			<JobCard key={index} job={job} />
-		  ))}
-		</Grid>
-        }
-      })}
-      {fetchingData && <p>Loading more jobs...</p>} {/* Display loading indicator when fetching more jobs */}
+	  <>
+		 <Grid item xs={12}>
+          <Filters onApplyFilters={setFilters} />
+		  </Grid>
+		  <Grid container spacing={2}>
+		{jobs.map((job, index) => {
+  if (jobs.length === index + 1) {
+    // Don't do anything for the last item
+  } else {
+    // Check if job meets the minimum experience requirement
+    if (job.minExp >= filters.minExperience &&
+		job.companyName.toLowerCase().includes(filters.companyName.toLowerCase()) &&
+		job.location.toLowerCase().includes(filters.location.toLowerCase())&&
+		(filters.minJdSalary === '' || job.minJdSalary >= filters.minBasePay)&&
+		job.jobRole.toLowerCase().includes(filters.role.toLowerCase())) {
+      return (
+		 
+			  
+	
+			  <JobCard key={index} job={job} />
+			
+       
+      );
+    } else {
+      return null; // Skip rendering this job if it doesn't meet the minimum experience requirement
+    }
+  }
+		})}
+			  </Grid>
+     {/* Display loading indicator when fetching more jobs */}
       {loading && <p>Loading...</p>}
       {error && <p>Error: {error}</p>}
-    </div>
+    </>
   );
 };
 

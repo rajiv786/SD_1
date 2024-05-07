@@ -3,7 +3,7 @@ import { Grid, Card, CardContent, Typography, Button } from '@mui/material';
 
 const JobCard = ({ job }) => {
   return (
-    <Grid item xs={12} sm={6} md={4}> {/* Adjust the grid sizes based on your layout */}
+    <Grid item xs={12} sm={6} md={4} lg={4}> {/* Adjust the grid sizes based on your layout */}
       <Card sx={{ maxWidth: 300, margin: 2 }}>
         <CardContent>
           <img src={job.logoUrl} alt={job.companyName} style={{ width: '100%', height: 'auto' }} />

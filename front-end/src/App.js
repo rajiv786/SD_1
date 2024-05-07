@@ -8,9 +8,7 @@ function App() {
   return (
     <Container>
       <Grid container spacing={3}>
-        <Grid item xs={12}>
-          <Filters />
-        </Grid>
+        
         <Grid item xs={12}>
           <JobList />
         </Grid>
